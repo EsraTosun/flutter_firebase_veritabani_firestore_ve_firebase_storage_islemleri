@@ -83,7 +83,7 @@ class FirestoreIslemleri extends StatelessWidget {
     );
   }
 
-  veriEklemeAdd() async {
+  veriEklemeAdd() async {  //koleksiyon üzerinden
     Map<String, dynamic> _eklenecekUser = <String, dynamic>{};
     _eklenecekUser['isim'] = 'emre';
     _eklenecekUser['yas'] = 34;
@@ -94,7 +94,7 @@ class FirestoreIslemleri extends StatelessWidget {
     await _firestore.collection('users').add(_eklenecekUser);
   }
 
-  veriEklemeSet() async {
+  veriEklemeSet() async {   //Verinin üstüne yazar dokuman üzerinde
     var _yeniDocID = _firestore.collection('users').doc().id;
 
     await _firestore
@@ -103,7 +103,8 @@ class FirestoreIslemleri extends StatelessWidget {
 
     await _firestore.doc('users/bCaUA4bnr8hrR9hGUP77').set(
         {'okul': 'Ege Üniversitesi', 'yas': FieldValue.increment(-5)},
-        SetOptions(merge: true));
+        SetOptions(merge: true));   //Verdiğimiz verileri ekler.var olan verileri silmez
+    //FieldValue.increment(-5) => var olan değeri 5 azaltır
   }
 
   veriGuncelleme() async {
