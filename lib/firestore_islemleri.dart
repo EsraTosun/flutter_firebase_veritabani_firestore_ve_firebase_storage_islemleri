@@ -83,7 +83,7 @@ class FirestoreIslemleri extends StatelessWidget {
     );
   }
 
-  veriEklemeAdd() async {
+  veriEklemeAdd() async {  //koleksiyon üzerinden
     Map<String, dynamic> _eklenecekUser = <String, dynamic>{};
     _eklenecekUser['isim'] = 'emre';
     _eklenecekUser['yas'] = 34;
@@ -94,7 +94,7 @@ class FirestoreIslemleri extends StatelessWidget {
     await _firestore.collection('users').add(_eklenecekUser);
   }
 
-  veriEklemeSet() async {
+  veriEklemeSet() async {   //Verinin üstüne yazar dokuman üzerinde
     var _yeniDocID = _firestore.collection('users').doc().id;
 
     await _firestore
@@ -103,26 +103,30 @@ class FirestoreIslemleri extends StatelessWidget {
 
     await _firestore.doc('users/bCaUA4bnr8hrR9hGUP77').set(
         {'okul': 'Ege Üniversitesi', 'yas': FieldValue.increment(-5)},
-        SetOptions(merge: true));
+        SetOptions(merge: true));   //Verdiğimiz verileri ekler.var olan verileri silmez
+    //FieldValue.increment(-5) => var olan değeri 5 azaltır
   }
 
   veriGuncelleme() async {
     await _firestore
         .doc('users/bCaUA4bnr8hrR9hGUP77')
-        .update({'adres.ilce': 'yeni ilçe'});
+        .update({
+      'adres.ilce': 'yeni ilçe',
+      'aaaaa' : true,   //Eğer alan bulunnmuyorsa ekler
+    });
   }
 
   veriSil() async {
     await _firestore.doc('users/bCaUA4bnr8hrR9hGUP77').delete();
     //CRUD
-    await _firestore
+    /*await _firestore
         .doc('users/bCaUA4bnr8hrR9hGUP77')
-        .update({'okul': FieldValue.delete()});
+        .update({'okul': FieldValue.delete()});  */
   }
 
   veriOkuOneTime() async {
     var _usersDocuments = await _firestore.collection('users').get();
-    debugPrint(_usersDocuments.size.toString());
+    debugPrint(_usersDocuments.size.toString());  //Kullanım mantıklı değil 3000 veri varsa 3000 okuma yapacak
     debugPrint(_usersDocuments.docs.length.toString());
     for (var eleman in _usersDocuments.docs) {
       debugPrint('Döküman id ${eleman.id}');
@@ -130,14 +134,14 @@ class FirestoreIslemleri extends StatelessWidget {
       debugPrint(userMap['isim']);
     }
 
-    var _emreDoc = await _firestore.doc('users/lODl1rILhnEeqeiDjBbj').get();
+    var _emreDoc = await _firestore.doc('users/ckKjMPvt12Ktv7VoU36G').get();
     debugPrint(_emreDoc.data()!['adres']['ilce'].toString());
   }
 
-  veriOkuRealTime() async {
+  veriOkuRealTime() async {  //Sürekli olaran bir dinleme yapar
     //var _userStream = await _firestore.collection('users').snapshots();
     var _userDocStream =
-        _firestore.doc('users/lODl1rILhnEeqeiDjBbj').snapshots();
+        _firestore.doc('users/ckKjMPvt12Ktv7VoU36G').snapshots();
     _userSubscribe = _userDocStream.listen((event) {
       /*  event.docChanges.forEach((element) {
         debugPrint(element.doc.data().toString());
@@ -151,23 +155,24 @@ class FirestoreIslemleri extends StatelessWidget {
     await _userSubscribe?.cancel();
   }
 
-  batchKavrami() async {
+  batchKavrami() async {   //Toplu yapılan işlemler,ya hep ya hiç mantığı vardır
     WriteBatch _batch = _firestore.batch();
     CollectionReference _counterColRef = _firestore.collection('counter');
 
-/*
+/*     //Eleman ekleme
     for (int i = 0; i < 100; i++) {
       var _yeniDoc = _counterColRef.doc();
       _batch.set(_yeniDoc, {'sayac': ++i, 'id':_yeniDoc.id});
     }*/
 
-/*
+/*   //Toplu Güncelleme
     var _counterDocs = await _counterColRef.get();
     _counterDocs.docs.forEach((element) {
       _batch.update(
           element.reference, {'createdAt': FieldValue.serverTimestamp()});
     });*/
 
+    //Toplu Silme
     var _counterDocs = await _counterColRef.get();
     _counterDocs.docs.forEach((element) {
       _batch.delete(element.reference);
