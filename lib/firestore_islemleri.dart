@@ -85,10 +85,11 @@ class FirestoreIslemleri extends StatelessWidget {
 
   veriEklemeAdd() async {  //koleksiyon üzerinden
     Map<String, dynamic> _eklenecekUser = <String, dynamic>{};
-    _eklenecekUser['isim'] = 'emre';
+    _eklenecekUser['isim'] = 'hasan';
     _eklenecekUser['yas'] = 34;
     _eklenecekUser['ogrenciMi'] = false;
     _eklenecekUser['adres'] = {'il': 'ankara', 'ilce': 'yenimahalle'};
+    _eklenecekUser['para'] = 1000;
     _eklenecekUser['renkler'] = FieldValue.arrayUnion(['mavi', 'yeşil']);
     _eklenecekUser['createdAt'] = FieldValue.serverTimestamp();
     await _firestore.collection('users').add(_eklenecekUser);
@@ -181,15 +182,16 @@ class FirestoreIslemleri extends StatelessWidget {
     await _batch.commit();
   }
 
+  //Ard arda gelen işlemleri tek bir kalem üzerinden yapmamızı sağlar
   transactionKavrami() async {
     _firestore.runTransaction((transaction) async {
       //1emrenin bakiyesini öğren
       //emreden 100 lira düş
       //hasana 100 lira ekle
       DocumentReference<Map<String, dynamic>> emreRef =
-          _firestore.doc('users/lODl1rILhnEeqeiDjBbj');
+          _firestore.doc('users/ckKjMPvt12Ktv7VoU36G');
       DocumentReference<Map<String, dynamic>> hasanRef =
-          _firestore.doc('users/UdpwK3unAKMMciZWUjKc');
+          _firestore.doc('users/3ihbtCJ8fDonR3jrNSKk');
 
       var _emreSnapshot = await transaction.get(emreRef);
       var _emreBakiye = _emreSnapshot.data()!['para'];
@@ -201,7 +203,7 @@ class FirestoreIslemleri extends StatelessWidget {
     });
   }
 
-  queryingData() async {
+  queryingData() async {   //Veri tabanunda sorgulama yapmak
     var _userRef = _firestore.collection('users').limit(5);
 
     var _sonuc = await _userRef.where('renkler', arrayContains: 'mavi').get();
