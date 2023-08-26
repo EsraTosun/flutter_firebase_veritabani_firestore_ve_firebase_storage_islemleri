@@ -243,7 +243,7 @@ class FirestoreIslemleri extends StatelessWidget {
       var _url = await _profileRef.getDownloadURL();
       debugPrint('yükleme bitti');
       _firestore
-          .doc('users/QPoLlmM3wLok9WQTlKrs')
+          .doc('users/3ihbtCJ8fDonR3jrNSKk')
           .set({'profile_pic': _url.toString()}, SetOptions(merge: true));
       debugPrint(_url);
     });
